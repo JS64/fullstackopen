@@ -8,7 +8,10 @@ const Button = ({ onClick, text }) => (
 )
 
 const Statistic = ({text, value}) => (
-  <p>{text}: {value}</p>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
 )
 
 const Statistics = (props) => {
@@ -16,12 +19,16 @@ const Statistics = (props) => {
     return (
       <>
         <h1>Statistics</h1>
-        <Statistic text="Good" value={props.good} />
-        <Statistic text="Neutral" value={props.neutral} />
-        <Statistic text="Bad" value={props.bad} />
-        <Statistic text="All" value={props.total} />
-        <Statistic text="Average" value={(props.good - props.bad)/props.total} />
-        <Statistic text="Positive" value={100*props.good/props.total+'%'} />
+        <table>
+          <tbody>
+            <Statistic text="Good" value={props.good} />
+            <Statistic text="Neutral" value={props.neutral} />
+            <Statistic text="Bad" value={props.bad} />
+            <Statistic text="All" value={props.total} />
+            <Statistic text="Average" value={(props.good - props.bad)/props.total} />
+            <Statistic text="Positive" value={100*props.good/props.total+'%'} />
+          </tbody>
+        </table>
       </>
     )
   }
