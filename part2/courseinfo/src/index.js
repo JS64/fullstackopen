@@ -1,29 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const Header = ({ course }) => {
+const Header = ({ course }) => (
+  <h1>{course.name}</h1>
+)
+
+const Part = ({ part }) => (
+  <p>
+    {part.name} {part.exercises}
+  </p>    
+)
+
+const Content = ({ parts }) => (
+  <>
+    {parts.map(parts => 
+      <Part key={parts.id} part={parts} />
+    )}
+  </>
+)
+
+const Total = ({ parts }) => {
+  const total = parts.map(a => a.exercises).reduce((a,b) => a + b)
   return (
-    <h1>{course.name}</h1>
+    <b>
+      Total of {total} exercise(s)
+    </b>
   )
 }
 
-const Part = ({ part }) => {
-  return (
-    <p>
-      {part.name} {part.exercises}
-    </p>    
-  )
-}
-
-const Content = ({ parts }) => {
-  return (
-    <div>
-      {parts.map(parts => 
-        <Part key={parts.id} part={parts} />
-      )}
-    </div>
-  )
-}
+const Course = ({ course }) => (
+  <div>
+    <Header course={course} />
+    <Content parts={course.parts} />
+    <Total parts={course.parts} />
+  </div>
+)
 
 const App = () => {
   const course = {
@@ -44,18 +55,16 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }
 
   return <Course course={course} />
 }
-
-const Course = ({ course }) => (
-  <div>
-    <Header course={course} />
-    <Content parts={course.parts} />
-  </div>
-)
 
 ReactDOM.render(<App />, document.getElementById('root'))
