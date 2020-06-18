@@ -6,12 +6,26 @@ const Person = ({ person }) => (
   </p>    
 )
 
-const Persons = ({persons}) => (
+const Persons = ({ persons }) => (
   <>
     {persons.map(persons => 
       <Person key={persons.name} person={persons} />
     )}
   </>
+)
+
+const PersonForm = (props) => (
+  <form onSubmit={props.addPerson}>
+    <div>
+      name: <input value={props.newName} onChange={props.handleNameChange} />
+    </div>
+    <div>
+      number: <input value={props.newNumber} onChange={props.handleNumberChange} />
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
 )
 
 const Filter = ({ filter, handleFilter }) => (
@@ -65,17 +79,13 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter filter={filter} handleFilter={handleFilter} />
       <h2>Add a new person</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm 
+        addPerson={addPerson}
+        newName={newName}
+        newNumber={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
       <Persons persons={filteredPersons} />
     </div>
