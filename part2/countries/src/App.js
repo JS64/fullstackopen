@@ -7,6 +7,33 @@ const Button = ({ name, onClick, text }) => (
   </button>
 )
 
+const Weather = ({ city }) => {
+  const [ weather, setWeather ] = useState([])
+
+  useEffect(() => {
+    const weatherstackToken = process.env.REACT_APP_WEATHERSTACK_API_KEY
+    const weatherstackEndpoint = `http://api.weatherstack.com/current?access_key=${weatherstackToken}&query=${city}`
+    axios
+      .get(weatherstackEndpoint)
+      .then(response => {
+        setWeather(response.data.current)
+      })
+  }, [city, setWeather])
+  
+  return (
+    <>
+      <h2>Weather in {city}</h2>
+      <p>
+        <b>Temperature: </b> {weather.temperature} Celcius
+      </p>
+      <img src={weather.weather_icons} alt={weather.weather_descriptions} height="100" />
+      <p>
+        <b>Wind: </b> {weather.wind_speed} km/h direction {weather.wind_dir}
+      </p>
+    </>
+  )
+}
+
 const Country = ({ country }) => (
   <>
     <h1>{country.name}</h1>
@@ -19,7 +46,8 @@ const Country = ({ country }) => (
       )}
     </ul>
     <img src={country.flag} alt={country.name} height="100" />
-  </>  
+    <Weather city={country.capital} />
+  </>
 )
 
 const Search = ({ search, handleSearch }) => (
@@ -61,7 +89,6 @@ const App = () => {
     axios
       .get('https://restcountries.eu/rest/v2/all')
       .then(response => {
-        console.log(response.data)
         setCountries(response.data)
       })
   }, [])
