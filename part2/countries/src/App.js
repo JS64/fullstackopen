@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const Button = ({ name, onClick, text }) => (
+  <button name={name} onClick={onClick}>
+    {text}
+  </button>
+)
+
 const Country = ({ country }) => (
   <>
     <h1>{country.name}</h1>
@@ -22,7 +28,7 @@ const Search = ({ search, handleSearch }) => (
   </p>
 )
 
-const Results =  ({ countries }) => {
+const Results =  ({ countries, handleShow }) => {
   if (countries.length > 10) {
     return (
       <p>Too many matching countries.  Please refine your search.</p>
@@ -31,7 +37,9 @@ const Results =  ({ countries }) => {
     return (
       <>
         {countries.map(country =>
-        <p key={country.name}>{country.name}</p>
+        <p key={country.name}>
+          {country.name} <Button name={country.name} text="Show" onClick={handleShow} />
+        </p>
       )}
       </>
     )
@@ -62,12 +70,16 @@ const App = () => {
     setSearch(event.target.value)
   }
 
+  const handleShow = (event) => {
+    setSearch(event.target.name)
+  }
+
   const filteredCountries = countries.filter(country => country.name.toLowerCase().includes(search.toLowerCase()))
-  
+ 
   return (
     <div>
       <Search search={search} handleSearch={handleSearch} />
-      <Results countries={filteredCountries} />
+      <Results countries={filteredCountries} handleShow={handleShow} />
     </div>
   )
 }
