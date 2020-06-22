@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Button = ({ name, onClick, text }) => (
-  <button name={name} onClick={onClick}>
+const Button = ({ onClick, text }) => (
+  <button onClick={onClick}>
     {text}
   </button>
 )
@@ -66,7 +66,7 @@ const Results =  ({ countries, handleShow }) => {
       <>
         {countries.map(country =>
         <p key={country.name}>
-          {country.name} <Button name={country.name} text="Show" onClick={handleShow} />
+          {country.name} <Button text="Show" onClick={() => handleShow(country.name)} />
         </p>
       )}
       </>
@@ -97,8 +97,8 @@ const App = () => {
     setSearch(event.target.value)
   }
 
-  const handleShow = (event) => {
-    setSearch(event.target.name)
+  const handleShow = (country) => {
+    setSearch(country)
   }
 
   const filteredCountries = countries.filter(country => country.name.toLowerCase().includes(search.toLowerCase()))
