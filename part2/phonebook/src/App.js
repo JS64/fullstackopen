@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Button = ({ onClick, text }) => (
+  <button onClick={onClick}>
+    {text}
+  </button>
+)
+
 const Person = ({ person }) => (
   <p>
     {person.name} {person.number}
   </p>    
 )
 
-const Persons = ({ persons }) => (
-  <>
-    {persons.map(persons => 
-      <Person key={persons.name} person={persons} />
-    )}
-  </>
+const Persons = ({ persons, deletePerson }) => (
+    persons.map(persons => 
+      <div key = {persons.name}>
+        <Person person={persons} />
+        <Button text="Delete" onClick={(id, name) => deletePerson(persons.id, persons.name)} />
+      </div>
+    )
 )
 
 const PersonForm = (props) => (
@@ -36,7 +43,7 @@ const Filter = ({ filter, handleFilter }) => (
 )
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
@@ -68,6 +75,20 @@ const App = () => {
       }
   }
 
+  const deletePerson = (id, name) => {
+    if (window.confirm(`Delete '${name}'?`)) { 
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(a => a.id !== id))
+        })
+        .catch(error => {
+          alert(`'${name}' has already been deleted from the server.`)
+          setPersons(persons.filter(a => a.id !== id))
+        })
+    }
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -95,7 +116,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} deletePerson={deletePerson} />
     </div>
   )
 }
