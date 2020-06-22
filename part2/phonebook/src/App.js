@@ -39,14 +39,14 @@ const Filter = ({ filter, handleFilter }) => (
   </p>
 )
 
-const Notification = ({ message }) => {
-  if (message === null) {
+const Notification = ({ notification }) => {
+  if (notification.message === null) {
     return null
   }
-
+  const notificationClass = !notification.error ? 'notification success' : 'notification error'
   return (
-    <div className="success">
-      {message}
+    <div className={notificationClass}>
+      {notification.message}
     </div>
   )
 }
@@ -56,7 +56,10 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
-  const [ notification, setNotification ] = useState(null)
+  const [ notification, setNotification ] = useState({
+    message: null,
+    error: false
+  })
 
   useEffect(() => {
     personService
@@ -79,9 +82,9 @@ const App = () => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
             setNewName('')
             setNewNumber('')
-            setNotification(`Updated phone number for ${returnedPerson.name}`)
+            setNotification({ message: `Updated phone number for ${returnedPerson.name}`, error: false })
             setTimeout(() => {
-              setNotification(null)
+              setNotification({ message: null, error: false })
             }, 5000)
           })
         }
@@ -96,9 +99,9 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
-          setNotification(`Added ${returnedPerson.name} to phonebook`)
+          setNotification({ message: `Added ${returnedPerson.name} to phonebook`, error: false })
           setTimeout(() => {
-            setNotification(null)
+            setNotification({ message: null, error: false })
           }, 5000)
         })
       }
@@ -112,8 +115,11 @@ const App = () => {
           setPersons(persons.filter(a => a.id !== id))
         })
         .catch(error => {
-          alert(`'${name}' has already been deleted from the server.`)
           setPersons(persons.filter(a => a.id !== id))
+          setNotification({ message: `'${name}' has already been deleted from the server.`, error: true })
+          setTimeout(() => {
+            setNotification({ message: null, error: false })
+          }, 5000)
         })
     }
   }
@@ -135,7 +141,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification notification={notification} />
       <Filter filter={filter} handleFilter={handleFilter} />
       <h2>Add a new person</h2>
       <PersonForm 
