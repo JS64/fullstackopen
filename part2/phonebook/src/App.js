@@ -7,18 +7,15 @@ const Button = ({ onClick, text }) => (
   </button>
 )
 
-const Person = ({ person }) => (
+const Person = ({ person, deletePerson }) => (
   <p>
-    {person.name} {person.number}
+    {person.name} {person.number} <Button text="Delete" onClick={(id, name) => deletePerson(person.id, person.name)} />
   </p>    
 )
 
 const Persons = ({ persons, deletePerson }) => (
     persons.map(persons => 
-      <div key = {persons.name}>
-        <Person person={persons} />
-        <Button text="Delete" onClick={(id, name) => deletePerson(persons.id, persons.name)} />
-      </div>
+      <Person key={persons.name} person={persons} deletePerson={deletePerson} />
     )
 )
 
@@ -59,7 +56,18 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     if (persons.map(a => a.name).includes(newName)) {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already in the phonebook.  Do you want to update their number to the new one?`)) { 
+        const existingPerson = persons.find(person => person.name === newName)
+        const id = existingPerson.id
+        const changes = { ...existingPerson, number: newNumber}
+        personService
+          .update(id, changes)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+        }
     } else {
       const personObject = {
         name: newName,
