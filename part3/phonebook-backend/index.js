@@ -24,11 +24,15 @@ let persons = [
         }
 ]
 
+app.get('/info', (req, res) => {
+    res.send(`<p>Phonebook has info for ${persons.length} people.</p><p>${new Date().toString()}</p>`)
+})
+
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+    res.json(persons)
 })
 
 const PORT = 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
 })
