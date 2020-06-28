@@ -16,6 +16,12 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+app.get('/info', (req, res) => {
+    Person.countDocuments({}).then(total => {
+        res.send(`<p>Phonebook has info for ${total} people.</p><p>${new Date().toString()}</p>`)
+    })
+})
+
 app.get('/api/persons', (req, res) => {
     Person.find({}).then(persons => {
         res.json(persons.map(person => person.toJSON()))
