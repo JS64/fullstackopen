@@ -12,9 +12,9 @@ morgan.token('body', function (req) {
 })
 
 app.use(cors())
+app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-app.use(express.static('build'))
 
 app.get('/api/persons', (req, res) => {
     Person.find({}).then(persons => {
@@ -54,10 +54,11 @@ app.post('/api/persons', (req, res) => {
     })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+app.delete('/api/persons/:id', (req, res) => {
+    Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
 })
 
 const PORT = process.env.PORT
