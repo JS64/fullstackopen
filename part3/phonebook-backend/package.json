@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && cd ../../part2/phonebook && npm run build --prod && cp -r build ../../part3/phonebook-backend/",
+    "build:ui": "cd ../../part2/phonebook && rm -rf build && npm run build --prod && cp -r build ../../part3/phonebook-backend/",
     "deploy": "cd ../../../fullstackopen && git subtree push --prefix part3/phonebook-backend heroku master",
     "logs:prod": "heroku logs --tail"
   },

@@ -75,8 +75,10 @@ app.put('/api/persons/:id', (req, res, next) => {
         name: body.name,
         number: body.number,
     }
+    
+    const opts = { new: true, runValidators: true, context: 'query' }
 
-    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    Person.findByIdAndUpdate(req.params.id, person, opts)
         .then(updatedPerson => updatedPerson.toJSON())
         .then(updatedAndFormattedPerson => {
             res.json(updatedAndFormattedPerson)

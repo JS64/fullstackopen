@@ -87,6 +87,12 @@ const App = () => {
               setNotification({ message: null, error: false })
             }, 5000)
           })
+          .catch(error => {
+            setNotification({ message: error.response.data.error, error: true })
+            setTimeout(() => {
+              setNotification({ message: null, error: false })
+            }, 5000)
+          })
         }
     } else {
       const personObject = {
@@ -100,6 +106,12 @@ const App = () => {
           setNewName('')
           setNewNumber('')
           setNotification({ message: `Added ${returnedPerson.name} to phonebook`, error: false })
+          setTimeout(() => {
+            setNotification({ message: null, error: false })
+          }, 5000)
+        })
+        .catch(error => {
+          setNotification({ message: error.response.data.error, error: true })
           setTimeout(() => {
             setNotification({ message: null, error: false })
           }, 5000)
