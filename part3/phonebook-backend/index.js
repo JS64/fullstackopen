@@ -17,15 +17,18 @@ app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/info', (req, res) => {
-    Person.countDocuments({}).then(total => {
-        res.send(`<p>Phonebook has info for ${total} people.</p><p>${new Date().toString()}</p>`)
-    })
+    Person.countDocuments({})
+        .then(total => {
+            res.send(`<p>Phonebook has info for ${total} people.</p><p>${new Date().toString()}</p>`)
+        })
 })
 
 app.get('/api/persons', (req, res) => {
-    Person.find({}).then(persons => {
-        res.json(persons.map(person => person.toJSON()))
-    })
+    Person.find({})
+        .then(persons => persons.map(person => person.toJSON()))
+        .then(formattedPersons => {
+            res.json(formattedPersons)
+        })
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -40,30 +43,21 @@ app.get('/api/persons/:id', (req, res, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
-
-    if (!body.name) {
-        return res.status(400).json({ 
-          error: 'name missing' 
-        })
-    }
-
-    if (!body.number) {
-        return res.status(400).json({ 
-          error: 'phone number missing' 
-        })
-    }
-    
+ 
     const person = new Person({
         name: body.name,
         number: body.number,
         date: new Date(),
     })
 
-    person.save().then(savedPerson => {
-        res.json(savedPerson.toJSON())
-    })
+    person.save()
+        .then(savedPerson => savedPerson.toJSON())
+        .then(savedAndFormattedPerson => {
+            res.json(savedAndFormattedPerson)
+        })
+        .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -83,8 +77,9 @@ app.put('/api/persons/:id', (req, res, next) => {
     }
 
     Person.findByIdAndUpdate(req.params.id, person, { new: true })
-        .then(updatedPerson => {
-            res.json(updatedPerson.toJSON())
+        .then(updatedPerson => updatedPerson.toJSON())
+        .then(updatedAndFormattedPerson => {
+            res.json(updatedAndFormattedPerson)
         })
         .catch(error => next(error))
 })
@@ -99,6 +94,8 @@ const errorHandler = (error, req, res, next) => {
     console.error(error.message)
     if (error.name === 'CastError' && error.kind == 'ObjectId') {
         return res.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return res.status(400).json({ error: error.message })
     }
     next(error)
 }
