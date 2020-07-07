@@ -69,6 +69,21 @@ describe('Add a new blog post', () => {
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd[blogsAtEnd.length - 1].likes).toBe(0)
   })
+
+  test('Returns 400 Bad Request if no title or url provided', async () => {
+    const newBlog = {
+      author: 'Martin Fowler',
+      likes: 4
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length)
+  })
 })
 
 afterAll(() => {
