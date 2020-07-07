@@ -34,6 +34,43 @@ describe('Fetch all blog posts', () => {
   })
 })
 
+describe('Add a new blog post', () => {
+  test('Succeeds with valid data', async () => {
+    const newBlog = {
+      title: 'Introduction to Testing',
+      author: 'Martin Fowler',
+      url: 'https://www.google.com',
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length + 1)
+    expect(blogsAtEnd[blogsAtEnd.length - 1].title).toBe('Introduction to Testing')
+  })
+
+  test('Likes default to 0 if not provided', async () => {
+    const newBlog = {
+      title: 'Introduction to Testing',
+      author: 'Martin Fowler',
+      url: 'https://www.google.com'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd[blogsAtEnd.length - 1].likes).toBe(0)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
