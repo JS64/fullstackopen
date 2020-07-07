@@ -102,6 +102,29 @@ describe('Deleting a single blog post', () => {
   })
 })
 
+describe('Update a blog post', () => {
+  test('Succeeds with valid data', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[blogsAtStart.length - 1]
+    const updatedBlog = {
+      title: 'Introduction to Testing II',
+      author: 'Martin Fowler Jr',
+      url: 'https://www.google.com',
+      likes: 2
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length)
+    expect(blogsAtEnd[blogsAtEnd.length - 1].title).toBe('Introduction to Testing II')
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
