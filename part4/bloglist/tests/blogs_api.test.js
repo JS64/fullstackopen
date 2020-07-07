@@ -15,17 +15,22 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
 })
 
-describe('Fetch all blogs', () => {
-  test('Blogs are returned as JSON', async () => {
+describe('Fetch all blog posts', () => {
+  test('Blog posts are returned as JSON', async () => {
     await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
-  test('All blogs are returned', async () => {
-    const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(helper.listWithManyBlogs.length)
+  test('All blog posts are returned', async () => {
+    const res = await api.get('/api/blogs')
+    expect(res.body).toHaveLength(helper.listWithManyBlogs.length)
+  })
+
+  test('Blog posts use \'id\' as unique identifier', async () => {
+    const res = await api.get('/api/blogs')
+    expect(res.body[0].id).toBeDefined()
   })
 })
 
