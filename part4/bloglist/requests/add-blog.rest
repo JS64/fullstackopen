@@ -1,9 +1,10 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1mb3dsZXIiLCJpZCI6IjVmMDUwNjhlMWJhYWIwMGZjN2U3ODgyYyIsImlhdCI6MTU5NDIyOTc4NH0.Xo3VYoH9V8BvPZh8WJPmjwpKBewjQn3xecvauuRLKQU
 
 {
-    "title": "Introduction to Testing II",
-    "name": "Martin Fowler Jr",
+    "title": "Introduction to Testing IV",
+    "name": "Martin Fowler the 4th",
     "url": "https://www.google.com",
-    "likes": 7
+    "likes": 18
 }
