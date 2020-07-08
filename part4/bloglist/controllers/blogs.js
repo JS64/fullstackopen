@@ -37,7 +37,6 @@ blogRouter.delete('/:id', async (req, res) => {
   if (!blog) {
     return res.status(400).json({ error: 'Blog does not exist' })
   }
-  console.log(user._id.toString())
   if ( blog.user.toString() === user._id.toString() ) {
     await Blog.findByIdAndRemove(req.params.id)
     user.blogs = user.blogs.filter(a => a._id !== req.params.id)
@@ -50,16 +49,27 @@ blogRouter.delete('/:id', async (req, res) => {
 
 blogRouter.put('/:id', async (req, res) => {
   const body = req.body
-
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
+  const decodedToken = jwt.verify(req.token, process.env.SECRET)
+  if (!req.token || !decodedToken.id) {
+    return res.status(401).json({ error: 'Token missing or invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+  req.body.user = user._id
+  const blog = await Blog.findById(req.params.id)
+  if (!blog) {
+    return res.status(400).json({ error: 'Blog does not exist' })
   }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog, { new: true })
-  res.json(updatedBlog.toJSON())
+  if ( blog.user.toString() === user._id.toString() ) {
+    const blogContent = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes
+    }
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blogContent, { new: true })
+    res.json(updatedBlog)
+  }
 })
 
 module.exports = blogRouter
