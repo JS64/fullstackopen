@@ -8,8 +8,16 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 beforeEach(async () => {
+  await User.deleteMany({})
   await Blog.deleteMany({})
-
+  const user = new User({
+    username: 'root',
+    name: 'Test User',
+    password: 'password',
+    _id: '5f050c669371e21ed3cb683a',
+    blogs: ['5a422a851b54a676234d17f7', '5a422aa71b54a676234d17f8', '5a422b3a1b54a676234d17f9', '5a422b891b54a676234d17fa', '5a422ba71b54a676234d17fb', '5a422bc61b54a676234d17fc']
+  })
+  await user.save()
   const blogObjects = helper.listWithManyBlogs
     .map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
@@ -53,6 +61,8 @@ describe('Add a new blog post', () => {
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length + 1)
     expect(blogsAtEnd[blogsAtEnd.length - 1].title).toBe('Introduction to Testing')
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd[0].blogs).toHaveLength(helper.listWithManyBlogs.length + 1)
   })
 
   test('Likes default to 0 if not provided', async () => {
@@ -123,6 +133,25 @@ describe('Update a blog post', () => {
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.listWithManyBlogs.length)
     expect(blogsAtEnd[blogsAtEnd.length - 1].title).toBe('Introduction to Testing II')
+  })
+})
+
+describe('Fetch all users', () => {
+  test('Users are returned as JSON', async () => {
+    await api
+      .get('/api/users')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('The initial user is returned as the only user', async () => {
+    const res = await api.get('/api/users')
+    expect(res.body).toHaveLength(1)
+  })
+
+  test('The initial user displays the correct number of blogs', async () => {
+    const res = await api.get('/api/users')
+    expect(res.body[0].blogs).toHaveLength(helper.listWithManyBlogs.length)
   })
 })
 

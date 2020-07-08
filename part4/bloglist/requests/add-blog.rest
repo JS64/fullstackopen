@@ -2,8 +2,8 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Introduction to Testing",
-    "name": "Martin Fowler",
+    "title": "Introduction to Testing II",
+    "name": "Martin Fowler Jr",
     "url": "https://www.google.com",
-    "likes": 5
+    "likes": 7
 }
