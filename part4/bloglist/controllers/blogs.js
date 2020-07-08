@@ -9,13 +9,12 @@ blogRouter.get('/', async (req, res) => {
 })
 
 blogRouter.post('/', async (req, res) => {
-  console.log(req.token)
   const decodedToken = jwt.verify(req.token, process.env.SECRET)
   if (!req.token || !decodedToken.id) {
-    return res.status(401).json({ error: 'token missing or invalid' })
+    return res.status(401).json({ error: 'Token missing or invalid' })
   }
   const user = await User.findById(decodedToken.id)
-  req.body.user = user
+  req.body.user = user._id
   if (typeof req.body.likes === 'undefined') {
     req.body.likes = 0
   }
@@ -28,7 +27,24 @@ blogRouter.post('/', async (req, res) => {
 })
 
 blogRouter.delete('/:id', async (req, res) => {
-  await Blog.findByIdAndRemove(req.params.id)
+  const decodedToken = jwt.verify(req.token, process.env.SECRET)
+  if (!req.token || !decodedToken.id) {
+    return res.status(401).json({ error: 'Token missing or invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+  req.body.user = user._id
+  const blog = await Blog.findById(req.params.id)
+  if (!blog) {
+    return res.status(400).json({ error: 'Blog does not exist' })
+  }
+  console.log(user._id.toString())
+  if ( blog.user.toString() === user._id.toString() ) {
+    await Blog.findByIdAndRemove(req.params.id)
+    user.blogs = user.blogs.filter(a => a._id !== req.params.id)
+    await user.save()
+  } else {
+    return res.status(401).json({ error: 'Unauthorized: Only the blog creator may delete this blog.' })
+  }
   res.status(204).end()
 })
 
