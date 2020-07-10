@@ -9,6 +9,18 @@ const Button = ({ onClick, text }) => (
   </button>
 )
 
+const Notification = ({ notification }) => {
+  if (notification.message === null) {
+    return null
+  }
+  const notificationClass = !notification.error ? 'notification success' : 'notification error'
+  return (
+    <div className={notificationClass}>
+      {notification.message}
+    </div>
+  )
+}
+
 const BlogForm = (props) => (
   <form onSubmit={props.addBlog}>
     <div>
@@ -27,13 +39,17 @@ const BlogForm = (props) => (
 )
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('') 
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const [ blogs, setBlogs ] = useState([])
+  const [ username, setUsername ] = useState('') 
+  const [ password, setPassword ] = useState('')
+  const [ user, setUser ] = useState(null)
+  const [ title, setTitle ] = useState('') 
+  const [ author, setAuthor ] = useState('')
+  const [ url, setUrl ] = useState('')
+  const [ notification, setNotification ] = useState({
+    message: null,
+    error: false
+  })
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -46,6 +62,10 @@ const App = () => {
     if (loggedInUserJSON) {
       const user = JSON.parse(loggedInUserJSON)
       setUser(user)
+      setNotification({ message: `Resuming logged in session.`, error: false })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
     }
   }, [])
 
@@ -62,8 +82,15 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (exception) {
-      console.log("Wrong credentials.")
+      setNotification({ message: `Successfully logged in.`, error: false })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
+    } catch (error) {
+      setNotification({ message: `Incorrect credentials.`, error: true })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
     }
   }
 
@@ -71,8 +98,15 @@ const App = () => {
     try {
       await window.localStorage.removeItem('loggedInUser')
       setUser(null)
-    } catch (exception) {
-      console.log(exception.message)
+      setNotification({ message: `Successfully logged out.`, error: false })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
+    } catch (error) {
+      setNotification({ message: `Error: ${error.response.data.error}`, error: true })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
     }
   }
 
@@ -90,9 +124,16 @@ const App = () => {
         setTitle('')
         setAuthor('')
         setUrl('')
+        setNotification({ message: `Added new blog: ${returnedBlog.title} by ${returnedBlog.author}`, error: false })
+        setTimeout(() => {
+          setNotification({ message: null, error: false })
+        }, 5000)
       })
       .catch(error => {
-        console.log(error.response.data.error)
+        setNotification({ message: `Failed to add blog: ${error.response.data.error}`, error: true })
+        setTimeout(() => {
+          setNotification({ message: null, error: false })
+        }, 5000)
       })
   }
 
@@ -145,6 +186,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification notification={notification} />
       {user === null ? loginForm() : blogList(blogs, user)}
     </div>
   )
