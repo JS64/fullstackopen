@@ -9,11 +9,31 @@ const Button = ({ onClick, text }) => (
   </button>
 )
 
+const BlogForm = (props) => (
+  <form onSubmit={props.addBlog}>
+    <div>
+      Title: <input value={props.title} onChange={({ target }) => props.setTitle(target.value)} />
+    </div>
+    <div>
+      Author: <input value={props.author} onChange={({ target }) => props.setAuthor(target.value)} />
+    </div>
+    <div>
+      Url: <input value={props.url} onChange={({ target }) => props.setUrl(target.value)} />
+    </div>
+    <div>
+      <button type="submit">Create</button>
+    </div>
+  </form>
+)
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('') 
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -38,6 +58,7 @@ const App = () => {
       window.localStorage.setItem(
         'loggedInUser', JSON.stringify(user)
       ) 
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -55,12 +76,32 @@ const App = () => {
     }
   }
 
+  const addBlog = (event) => {
+    event.preventDefault()
+    const blogObject = {
+      title: title,
+      author: author,
+      url: url
+    }
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setTitle('')
+        setAuthor('')
+        setUrl('')
+      })
+      .catch(error => {
+        console.log(error.response.data.error)
+      })
+  }
+
   const loginForm = () => (
     <>
       <h2>Log in to Application</h2>
       <form onSubmit={handleLogin}>
         <div>
-          username
+          Username 
             <input
             type="text"
             value={username}
@@ -69,7 +110,7 @@ const App = () => {
           />
         </div>
         <div>
-          password
+          Password 
             <input
             type="password"
             value={password}
@@ -86,6 +127,16 @@ const App = () => {
     <>
       <h2>Blogs</h2>
       <p>Logged in as {user.name}<Button text="Log out" onClick={() => handleLogout()} /></p>
+      <h2>Create new blog</h2>
+      <BlogForm 
+        addBlog = {addBlog}
+        setTitle = {setTitle}
+        setAuthor = {setAuthor}
+        setUrl = {setUrl}
+        title = {title}
+        author = {author}
+        url = {url}
+      />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
