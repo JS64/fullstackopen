@@ -6,12 +6,6 @@ import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 
-const Button = ({ onClick, text }) => (
-  <button onClick={onClick}>
-    {text}
-  </button>
-)
-
 const App = () => {
   const [ blogs, setBlogs ] = useState([])
   const [ user, setUser ] = useState(null)
@@ -70,7 +64,10 @@ const App = () => {
   const blogList = (blogs, user) => (
     <>
       <h2>Blogs</h2>
-      <p>Logged in as {user.name}<Button text="Log out" onClick={() => handleLogout()} /></p>
+      <p>
+        Logged in as {user.name}
+        <button onClick={() => handleLogout()}>Log out</button>
+      </p>
       <Togglable buttonLabel="New blog" ref={blogFormRef}>
         <BlogForm 
           blogs = {blogs}
