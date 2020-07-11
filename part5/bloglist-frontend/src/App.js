@@ -16,7 +16,7 @@ const App = () => {
 
   const blogFormRef = useRef()
   const loginFormRef = useRef()
-  
+
   useEffect(() => {
     blogService.getAll().then(blogs => {
       blogs.sort((a,b) => b.likes - a.likes)
@@ -29,7 +29,7 @@ const App = () => {
     if (loggedInUserJSON) {
       const user = JSON.parse(loggedInUserJSON)
       setUser(user)
-      setNotification({ message: `Resuming logged in session.`, error: false })
+      setNotification({ message: 'Resuming logged in session.', error: false })
       setTimeout(() => {
         setNotification({ message: null, error: false })
       }, 5000)
@@ -40,7 +40,7 @@ const App = () => {
     try {
       await window.localStorage.removeItem('loggedInUser')
       setUser(null)
-      setNotification({ message: `Successfully logged out.`, error: false })
+      setNotification({ message: 'Successfully logged out.', error: false })
       setTimeout(() => {
         setNotification({ message: null, error: false })
       }, 5000)
@@ -54,11 +54,11 @@ const App = () => {
 
   const loginForm = () => (
     <Togglable buttonLabel="Log in" ref={loginFormRef}>
-      <LoginForm 
-          setUser = {setUser}
-          setNotification = {setNotification}
-          loginFormRef = {loginFormRef}
-        />
+      <LoginForm
+        setUser = {setUser}
+        setNotification = {setNotification}
+        loginFormRef = {loginFormRef}
+      />
     </Togglable>
   )
 
@@ -70,7 +70,7 @@ const App = () => {
         <button onClick={() => handleLogout()}>Log out</button>
       </p>
       <Togglable buttonLabel="New blog" ref={blogFormRef}>
-        <BlogForm 
+        <BlogForm
           blogs = {blogs}
           setBlogs = {setBlogs}
           setNotification = {setNotification}
@@ -78,8 +78,8 @@ const App = () => {
         />
       </Togglable>
       {blogs.map(blog =>
-        <Blog 
-          key = {blog.id} 
+        <Blog
+          key = {blog.id}
           user = {user}
           blog = {blog}
           blogs = {blogs}

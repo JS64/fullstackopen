@@ -7,18 +7,18 @@ const BlogForm = ({
   setNotification,
   blogFormRef
 }) => {
-  const [ title, setTitle ] = useState('') 
+  const [ title, setTitle ] = useState('')
   const [ author, setAuthor ] = useState('')
   const [ url, setUrl ] = useState('')
-  
+
   const handleTitleChange = (event) => {
-      setTitle(event.target.value)
+    setTitle(event.target.value)
   }
   const handleAuthorChange = (event) => {
-      setAuthor(event.target.value)
+    setAuthor(event.target.value)
   }
   const handleUrlChange = (event) => {
-      setUrl(event.target.value)
+    setUrl(event.target.value)
   }
 
   const addBlog = (event) => {
@@ -47,12 +47,12 @@ const BlogForm = ({
           setNotification({ message: null, error: false })
         }, 5000)
       })
-    }
+  }
 
   return (
     <>
-        <h2>Create new blog</h2>
-        <form onSubmit={addBlog}>
+      <h2>Create new blog</h2>
+      <form onSubmit={addBlog}>
         <div>
             Title: <input value={title} onChange={handleTitleChange} />
         </div>
@@ -63,11 +63,11 @@ const BlogForm = ({
             Url: <input value={url} onChange={handleUrlChange} />
         </div>
         <div>
-            <button type="submit">Create</button>
+          <button type="submit">Create</button>
         </div>
-        </form>
-      </>
-    )
-  }
+      </form>
+    </>
+  )
+}
 
-  export default BlogForm
+export default BlogForm

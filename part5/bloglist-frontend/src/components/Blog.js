@@ -1,7 +1,7 @@
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ 
+const Blog = ({
   user,
   blog,
   blogs,
@@ -23,7 +23,7 @@ const Blog = ({
 
   const detailsVisible = { display: visible ? '' : 'none' }
   const detailsHidden = { display: visible ? 'none' : '' }
-  
+
   const toggleDetails = () => {
     setVisible(!visible)
   }
@@ -40,7 +40,7 @@ const Blog = ({
     blogService
       .update(blog.id, updatedObject)
       .then(() => {
-        setNotification({ message: `Successfully liked blog post.`, error: false })
+        setNotification({ message: 'Successfully liked blog post.', error: false })
         setTimeout(() => {
           setNotification({ message: null, error: false })
         }, 5000)
@@ -68,15 +68,15 @@ const Blog = ({
         })
         .catch(error => {
           setBlogs(blogs.filter(a => a.id !== blog.id))
-          setNotification({ message: `Cannot delete '${blog.title}' by ${blog.author}. No delete permission or blog has already been deleted.`, error: true })
+          setNotification({ message: `Cannot delete '${blog.title}' by ${blog.author}. Reason: ${error.response.data.error}.`, error: true })
           setTimeout(() => {
             setNotification({ message: null, error: false })
           }, 5000)
         })
     }
-    
+
   }
-  
+
   return (
     <div style={blogStyle}>
       <p>
@@ -91,7 +91,7 @@ const Blog = ({
           <button onClick={handleLikes}>Like</button>
         </p>
         <p>{blog.user.name}</p>
-        {removable && 
+        {removable &&
           <p>
             <button onClick={handleRemove}>Remove</button>
           </p>
