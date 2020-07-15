@@ -1,39 +1,17 @@
 import React, { useState } from 'react'
-import loginService from '../services/login'
-import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const LoginForm = ({
-  setUser,
-  setNotification,
-  loginFormRef
-}) => {
+const LoginForm = ({ login }) => {
   const [ username, setUsername ] = useState('')
   const [ password, setPassword ] = useState('')
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault()
-    loginFormRef.current.toggleVisibility()
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
-      window.localStorage.setItem(
-        'loggedInUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      setNotification({ message: 'Successfully logged in.', error: false })
-      setTimeout(() => {
-        setNotification({ message: null, error: false })
-      }, 5000)
-    } catch (error) {
-      setNotification({ message: 'Incorrect credentials.', error: true })
-      setTimeout(() => {
-        setNotification({ message: null, error: false })
-      }, 5000)
-    }
+    login({
+      username: username,
+      password: password,
+    })
+    setUsername('')
+    setPassword('')
   }
 
   return (
@@ -65,8 +43,7 @@ const LoginForm = ({
 }
 
 LoginForm.propTypes = {
-  setUser: PropTypes.func.isRequired,
-  setNotification: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired,
   loginFormRef: PropTypes.object.isRequired
 }
 

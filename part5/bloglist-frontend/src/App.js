@@ -5,6 +5,7 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
   const [ blogs, setBlogs ] = useState([])
@@ -19,8 +20,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
-      blogs.sort((a,b) => b.likes - a.likes)
-      setBlogs(blogs)
+      setBlogs([...blogs].sort((a,b) => b.likes - a.likes))
     })
   }, [])
 
@@ -36,7 +36,7 @@ const App = () => {
     }
   }, [])
 
-  const handleLogout = async () => {
+  const logout = async () => {
     try {
       await window.localStorage.removeItem('loggedInUser')
       setUser(null)
@@ -52,7 +52,47 @@ const App = () => {
     }
   }
 
-  const handleLikes = (blog) => {
+  const login = async (credentials) => {
+    loginFormRef.current.toggleVisibility()
+    try {
+      const user = await loginService.login(credentials)
+      window.localStorage.setItem(
+        'loggedInUser', JSON.stringify(user)
+      )
+      blogService.setToken(user.token)
+      setUser(user)
+      setNotification({ message: 'Successfully logged in.', error: false })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
+    } catch (error) {
+      setNotification({ message: 'Incorrect credentials.', error: true })
+      setTimeout(() => {
+        setNotification({ message: null, error: false })
+      }, 5000)
+    }
+  }
+
+  const createBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNotification({ message: `Added new blog: ${returnedBlog.title} by ${returnedBlog.author}`, error: false })
+        setTimeout(() => {
+          setNotification({ message: null, error: false })
+        }, 5000)
+      })
+      .catch(error => {
+        setNotification({ message: `Failed to add blog: ${error.response.data.error}`, error: true })
+        setTimeout(() => {
+          setNotification({ message: null, error: false })
+        }, 5000)
+      })
+  }
+
+  const handleLikes = (blog => {
     const updatedObject = {
       likes: blog.likes + 1,
       author: blog.author,
@@ -62,7 +102,7 @@ const App = () => {
       user: blog.user
     }
 
-    const updatedBlogs = blogs.map(blog => {
+    const updatedBlogs = [...blogs].map(blog => {
       if (blog.id === updatedObject.id)
         return updatedObject
       return blog
@@ -71,7 +111,7 @@ const App = () => {
     blogService
       .update(blog.id, updatedObject)
       .then(() => {
-        setBlogs(updatedBlogs)
+        setBlogs(updatedBlogs.sort((a,b) => b.likes - a.likes))
         setNotification({ message: 'Successfully liked blog post.', error: false })
         setTimeout(() => {
           setNotification({ message: null, error: false })
@@ -83,7 +123,7 @@ const App = () => {
           setNotification({ message: null, error: false })
         }, 5000)
       })
-  }
+  })
 
   const handleRemove = (blog) => {
     const confirmation = window.confirm(`Delete '${blog.title}' by ${blog.author}?`)
@@ -110,8 +150,7 @@ const App = () => {
   const loginForm = () => (
     <Togglable buttonLabel="Log in" ref={loginFormRef}>
       <LoginForm
-        setUser = {setUser}
-        setNotification = {setNotification}
+        login = {login}
         loginFormRef = {loginFormRef}
       />
     </Togglable>
@@ -122,13 +161,11 @@ const App = () => {
       <h2>Blogs</h2>
       <p>
         Logged in as {user.name}
-        <button onClick={() => handleLogout()}>Log out</button>
+        <button onClick={() => logout()}>Log out</button>
       </p>
       <Togglable buttonLabel="New blog" ref={blogFormRef}>
         <BlogForm
-          blogs = {blogs}
-          setBlogs = {setBlogs}
-          setNotification = {setNotification}
+          createBlog = {createBlog}
           blogFormRef = {blogFormRef}
         />
       </Togglable>
