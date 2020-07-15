@@ -67,7 +67,7 @@ const LoginForm = ({
 LoginForm.propTypes = {
   setUser: PropTypes.func.isRequired,
   setNotification: PropTypes.func.isRequired,
-  loginFormRef: PropTypes.func.isRequired
+  loginFormRef: PropTypes.object.isRequired
 }
 
 export default LoginForm

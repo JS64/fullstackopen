@@ -52,6 +52,61 @@ const App = () => {
     }
   }
 
+  const handleLikes = (blog) => {
+    const updatedObject = {
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url,
+      id: blog.id,
+      user: blog.user
+    }
+
+    const updatedBlogs = blogs.map(blog => {
+      if (blog.id === updatedObject.id)
+        return updatedObject
+      return blog
+    })
+
+    blogService
+      .update(blog.id, updatedObject)
+      .then(() => {
+        setBlogs(updatedBlogs)
+        setNotification({ message: 'Successfully liked blog post.', error: false })
+        setTimeout(() => {
+          setNotification({ message: null, error: false })
+        }, 5000)
+      })
+      .catch(error => {
+        setNotification({ message: `Failed to submit like due to: ${error.response.data.error}`, error: true })
+        setTimeout(() => {
+          setNotification({ message: null, error: false })
+        }, 5000)
+      })
+  }
+
+  const handleRemove = (blog) => {
+    const confirmation = window.confirm(`Delete '${blog.title}' by ${blog.author}?`)
+    if (confirmation) {
+      blogService
+        .remove(blog.id)
+        .then(() => {
+          setBlogs(blogs.filter(a => a.id !== blog.id))
+          setNotification({ message: `'${blog.title}' by ${blog.author} has been successfully deleted.`, error: false })
+          setTimeout(() => {
+            setNotification({ message: null, error: false })
+          }, 5000)
+        })
+        .catch(error => {
+          setBlogs(blogs.filter(a => a.id !== blog.id))
+          setNotification({ message: `Cannot delete '${blog.title}' by ${blog.author}. Reason: ${error.response.data.error}.`, error: true })
+          setTimeout(() => {
+            setNotification({ message: null, error: false })
+          }, 5000)
+        })
+    }
+  }
+
   const loginForm = () => (
     <Togglable buttonLabel="Log in" ref={loginFormRef}>
       <LoginForm
@@ -82,9 +137,8 @@ const App = () => {
           key = {blog.id}
           user = {user}
           blog = {blog}
-          blogs = {blogs}
-          setBlogs = {setBlogs}
-          setNotification = {setNotification}
+          handleLikes = {handleLikes}
+          handleRemove = {handleRemove}
         />
       )}
     </>

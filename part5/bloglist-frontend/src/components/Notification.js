@@ -15,8 +15,8 @@ const Notification = ({ notification }) => {
 
 Notification.propTypes = {
   notification: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    error: PropTypes.bool.isRequired
+    message: PropTypes.string,
+    error: PropTypes.bool
   }).isRequired
 }
 

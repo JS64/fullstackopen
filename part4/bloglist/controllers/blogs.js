@@ -58,23 +58,19 @@ blogRouter.put('/:id', async (req, res) => {
   if (!req.token || !decodedToken.id) {
     return res.status(401).json({ error: 'Token missing or invalid' })
   }
-  const user = await User.findById(decodedToken.id)
-  req.body.user = user._id
   const blog = await Blog.findById(req.params.id)
   if (!blog) {
     return res.status(400).json({ error: 'Blog does not exist' })
   }
 
-  if ( blog.user.toString() === user._id.toString() ) {
-    const blogContent = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes
-    }
-    const updatedBlog = await blog.update(blogContent)
-    res.json(updatedBlog)
+  const blogContent = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes
   }
+  const updatedBlog = await blog.update(blogContent)
+  res.json(updatedBlog)
 })
 
 module.exports = blogRouter
