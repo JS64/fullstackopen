@@ -29,19 +29,19 @@ const Blog = ({
     <div style={blogStyle}>
       <p>
         {blog.title} {blog.author}
-        <button onClick={toggleDetails} style={detailsVisible}>Hide</button>
-        <button onClick={toggleDetails} style={detailsHidden}>Show</button>
+        <button id='hide-button' onClick={toggleDetails} style={detailsVisible}>Hide</button>
+        <button id='show-button' onClick={toggleDetails} style={detailsHidden}>Show</button>
       </p>
       <div style={detailsVisible}>
         <p>{blog.url}</p>
         <p>
-          Likes {blog.likes}
-          <button onClick={() => handleLikes(blog)}>Like</button>
+          Likes <span id='likes-count'>{blog.likes}</span>
+          <button id='like-button' onClick={() => handleLikes(blog)}>Like</button>
         </p>
         <p>{blog.user.name}</p>
         {removable &&
           <p>
-            <button onClick={() => handleRemove(blog)}>Remove</button>
+            <button id='remove-button' onClick={() => handleRemove(blog)}>Remove</button>
           </p>
         }
       </div>

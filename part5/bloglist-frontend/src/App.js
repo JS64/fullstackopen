@@ -29,6 +29,7 @@ const App = () => {
     if (loggedInUserJSON) {
       const user = JSON.parse(loggedInUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
       setNotification({ message: 'Resuming logged in session.', error: false })
       setTimeout(() => {
         setNotification({ message: null, error: false })
