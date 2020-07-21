@@ -78,7 +78,7 @@ describe('Blog app', function() {
       })
     })
 
-    describe.only('And multiple blogs exist', function() {
+    describe('And multiple blogs exist', function() {
       beforeEach(function() {
         cy.createBlog({ title: '#4 Likes', author: 'Cypress', url: 'https://www.google.com', likes: 1 })
         cy.createBlog({ title: '#2 Likes', author: 'Cypress', url: 'https://www.google.com', likes: 7 })
